@@ -65,10 +65,11 @@ jobs:
             # Garantir que o symlink do .env aponta para o arquivo centralizado
             ln -sf ${{ secrets.ENV_FILE_PATH }} backend/.env
 
-            # Install production deps and rebuild backend
+            # Install ALL deps (need devDeps for tsc), build, then prune
             cd backend
-            npm ci --omit=dev
+            npm ci
             npm run build
+            npm prune --omit=dev
 
             # Restart backend via systemd service (pw.service)
             sudo systemctl restart pw
