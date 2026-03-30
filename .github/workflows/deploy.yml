@@ -1,0 +1,76 @@
+name: Deploy to AWS EC2
+
+on:
+  workflow_run:
+    workflows: ["CI – Build & Smoke Test"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download frontend build from CI
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts
+
+      # Verifica se o .env centralizado existe na EC2 antes de prosseguir
+      - name: Verify env file on EC2
+        run: |
+          ssh -i ~/.ssh/id_rsa \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+            'test -f ${{ secrets.ENV_FILE_PATH }} || (echo "ERRO: .env nao encontrado em ${{ secrets.ENV_FILE_PATH }}" && exit 1)'
+
+      # Sync frontend dist to EC2
+      - name: Sync frontend dist to EC2
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/id_rsa" \
+            frontend/dist/ \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/heloisarossato.com/dist/
+
+      # Deploy backend on EC2
+      - name: Deploy backend on EC2
+        run: |
+          ssh -i ~/.ssh/id_rsa \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'ENDSSH'
+            set -e
+            cd ~/personal-website
+
+            # Pull latest code
+            git pull origin main
+
+            # Garantir que o symlink do .env aponta para o arquivo centralizado
+            ln -sf ${{ secrets.ENV_FILE_PATH }} backend/.env
+
+            # Install production deps and rebuild backend
+            cd backend
+            npm ci --omit=dev
+            npm run build
+
+            # Restart backend via systemd service (pw.service)
+            sudo systemctl restart pw
+
+            # Reload Caddy
+            sudo caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
+          ENDSSH

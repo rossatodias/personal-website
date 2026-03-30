@@ -1,0 +1,40 @@
+[Unit]
+Description=Personal Website – Backend (Node.js + Express)
+Documentation=https://github.com/rossatodias/personal-website
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+# Ajustar para o usuário/caminho real na EC2
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/personal-website/backend
+
+# Arquivo de variáveis centralizado (path definido pela secret ENV_FILE_PATH no GitHub)
+# Na EC2: sudo cp /caminho/do/seu/.env /home/ubuntu/.pw.env && chmod 600 /home/ubuntu/.pw.env
+EnvironmentFile=/home/ubuntu/.pw.env
+
+# Executa o build compilado (TypeScript → dist/app.js)
+ExecStart=/usr/bin/node /home/ubuntu/personal-website/backend/dist/app.js
+
+# Reinício automático em caso de falha
+Restart=on-failure
+RestartSec=5s
+StartLimitInterval=60s
+StartLimitBurst=3
+
+# Logs vão para o journal do systemd (ver com: journalctl -u pw)
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=pw-backend
+
+# Segurança: restringir capabilities
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/home/ubuntu/personal-website/backend
+
+[Install]
+WantedBy=multi-user.target

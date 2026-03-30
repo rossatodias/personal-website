@@ -1,0 +1,13 @@
+[
+    {
+        "id": "ces11-game",
+        "title": "Dino Eggs",
+        "description": "Projeto final da matéria de Estrutura de Dados e Algoritmos. O jogo 'Dino Eggs' implementa o algoritmo de Dijkstra para otimizar o caminho do personagem através do cenário.",
+        "tags": [
+            "C++ · Dijkstra · Estrutura de Dados"
+        ],
+        "repoUrl": "https://github.com/rossatodias/ces11-game",
+        "semester": "2º Semestre",
+        "featured": true
+    }
+]

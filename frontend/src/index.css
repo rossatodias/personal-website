@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --scrollbar-thumb: #c4b5fd;
+    --scrollbar-track: #f5f3ff;
+  }
+
+  .dark {
+    --scrollbar-thumb: #7c3aed;
+    --scrollbar-track: #0f172a;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply antialiased transition-colors duration-300;
+    background-color: theme('colors.white');
+    color: theme('colors.slate.800');
+    font-family: theme('fontFamily.sans');
+  }
+
+  .dark body {
+    background-color: theme('colors.slate.900');
+    color: theme('colors.slate.100');
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  code,
+  pre,
+  kbd {
+    @apply font-mono;
+  }
+}
+
+@layer components {
+  .section-container {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-title {
+    @apply text-3xl sm:text-4xl font-bold mb-3;
+  }
+
+  .section-subtitle {
+    @apply text-slate-500 dark:text-slate-400 text-lg mb-12;
+  }
+
+  /* glass-card: bg/border com opacidade via CSS puro (evita @apply com /XX em @layer) */
+  .glass-card {
+    @apply backdrop-blur-sm rounded-2xl shadow-lg;
+    background-color: rgba(255, 255, 255, 0.70);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+  }
+
+  .dark .glass-card {
+    background-color: rgba(30, 41, 59, 0.70);
+    /* slate-800/70 */
+    border-color: rgba(51, 65, 85, 0.50);
+    /* slate-700/50 */
+  }
+
+  /* btn-primary: shadow color variants removidos do @apply (não suportados com /opacity) */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md;
+    background-color: theme('colors.lavender.500');
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background-color: theme('colors.lavender.600');
+    box-shadow: 0 4px 20px -4px theme('colors.lavender.300');
+  }
+
+  .dark .btn-primary {
+    background-color: theme('colors.lavender.600');
+  }
+
+  .dark .btn-primary:hover {
+    background-color: theme('colors.lavender.500');
+    box-shadow: 0 4px 20px -4px rgba(109, 40, 217, 0.30);
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-200;
+    border: 2px solid theme('colors.lavender.400');
+    color: theme('colors.lavender.600');
+  }
+
+  .btn-outline:hover {
+    background-color: theme('colors.lavender.50');
+  }
+
+  .dark .btn-outline {
+    border-color: theme('colors.lavender.400');
+    color: theme('colors.lavender.300');
+  }
+
+  .dark .btn-outline:hover {
+    background-color: rgba(109, 40, 217, 0.20);
+  }
+
+  .tag {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium font-mono;
+    background-color: theme('colors.lavender.100');
+    color: theme('colors.lavender.700');
+  }
+
+  .dark .tag {
+    background-color: rgba(109, 40, 217, 0.40);
+    color: theme('colors.lavender.300');
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl transition-all duration-200;
+    border: 1px solid theme('colors.slate.200');
+    background-color: theme('colors.white');
+    color: theme('colors.slate.800');
+  }
+
+  .input-field::placeholder {
+    color: theme('colors.slate.400');
+  }
+
+  .input-field:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px theme('colors.lavender.400');
+    border-color: transparent;
+  }
+
+  .dark .input-field {
+    border-color: theme('colors.slate.700');
+    background-color: theme('colors.slate.800');
+    color: theme('colors.slate.100');
+  }
+
+  .dark .input-field::placeholder {
+    color: theme('colors.slate.500');
+  }
+}
+
+/* Gradient mesh background */
+.gradient-mesh {
+  background:
+    radial-gradient(at 20% 20%, hsl(262, 90%, 95%) 0px, transparent 50%),
+    radial-gradient(at 80% 10%, hsl(150, 75%, 93%) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, hsl(30, 90%, 94%) 0px, transparent 50%);
+}
+
+.dark .gradient-mesh {
+  background:
+    radial-gradient(at 20% 20%, hsl(262, 60%, 12%) 0px, transparent 50%),
+    radial-gradient(at 80% 10%, hsl(150, 50%, 8%) 0px, transparent 50%),
+    radial-gradient(at 50% 80%, hsl(30, 60%, 10%) 0px, transparent 50%);
+}
