@@ -19,7 +19,7 @@ export const sendWithGoogle = async ({ name, email, message }: ContactPayload) =
     })
 
     return transporter.sendMail({
-        from: `"Website Contact" <no-reply@juanlibonatti.com>`,
+        from: `"Website Contact" <no-reply@heloisarossato.com>`,
         to: process.env.GMAIL_USER,
         subject: 'New Contact Form Submission',
         text: `
