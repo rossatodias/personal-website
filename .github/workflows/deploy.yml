@@ -29,15 +29,17 @@ jobs:
 
       - name: Setup SSH
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+        env:
+          SSH_OPTIONS: -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10
 
       # Verifica se o .env centralizado existe na EC2 antes de prosseguir
       - name: Verify env file on EC2
         run: |
-          ssh -i ~/.ssh/id_rsa \
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=accept-new \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
             'test -f ${{ secrets.ENV_FILE_PATH }} || (echo "ERRO: .env nao encontrado em ${{ secrets.ENV_FILE_PATH }}" && exit 1)'
 
@@ -45,14 +47,14 @@ jobs:
       - name: Sync frontend dist to EC2
         run: |
           rsync -avz --delete \
-            -e "ssh -i ~/.ssh/id_rsa" \
+            -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=accept-new" \
             frontend/dist/ \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/heloisarossato.com/dist/
 
       # Deploy backend on EC2
       - name: Deploy backend on EC2
         run: |
-          ssh -i ~/.ssh/id_rsa \
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=accept-new \
             ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'ENDSSH'
             set -e
             cd ~/personal-website
