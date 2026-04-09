@@ -2,7 +2,7 @@ import { Github, Linkedin, Mail, Terminal } from 'lucide-react'
 
 const socialLinks = [
     { href: 'https://github.com/rossatodias', icon: Github, label: 'GitHub' },
-    { href: 'https://linkedin.com/in/heloisarossato', icon: Linkedin, label: 'LinkedIn' },
+    { href: 'https://linkedin.com/in/heloisa-rossato', icon: Linkedin, label: 'LinkedIn' },
     { href: 'mailto:contato@heloisarossato.com', icon: Mail, label: 'Email' },
 ]
 

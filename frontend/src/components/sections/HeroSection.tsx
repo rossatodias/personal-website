@@ -67,7 +67,7 @@ export function HeroSection() {
                             <Github size={16} /> GitHub
                         </a>
                         <a
-                            href="https://linkedin.com/in/heloisarossato"
+                            href="https://linkedin.com/in/heloisa-rossato"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="btn-outline"
