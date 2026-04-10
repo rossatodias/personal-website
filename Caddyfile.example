@@ -1,7 +1,31 @@
 # ── Site principal ────────────────────────────────────────────────────────────
-heloisarossato.com, www.heloisarossato.com {
+seusite.com, www.seusite.com {
 
     encode gzip zstd
+
+    # ── Security headers (defense-in-depth, complement backend Helmet) ────────
+    header {
+        # HSTS with preload
+        Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+
+        # Prevent clickjacking
+        X-Frame-Options "DENY"
+
+        # Prevent MIME-type sniffing
+        X-Content-Type-Options "nosniff"
+
+        # Referrer policy
+        Referrer-Policy "strict-origin-when-cross-origin"
+
+        # Permissions policy – block all unnecessary browser APIs
+        Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()"
+
+        # Block cross-domain policies (Flash, PDF readers)
+        X-Permitted-Cross-Domain-Policies "none"
+
+        # Remove server identifier
+        -Server
+    }
 
     # ── Backend API – proxy interno (NUNCA exposto publicamente) ──────────────
     handle /api/* {
@@ -11,13 +35,14 @@ heloisarossato.com, www.heloisarossato.com {
             transport http {
                 dial_timeout 5s
                 read_timeout 30s
+                write_timeout 30s
             }
         }
     }
 
     # ── Frontend (React SPA) ──────────────────────────────────────────────────
     handle {
-        root * /var/www/heloisarossato.com/dist
+        root * /var/www/seusite.com/dist
 
         @hashed_assets path_regexp \.[a-f0-9]{8,}\.(js|css|woff2?)$
         header @hashed_assets Cache-Control "public, max-age=31536000, immutable"
@@ -26,15 +51,8 @@ heloisarossato.com, www.heloisarossato.com {
         file_server
     }
 
-    header {
-        X-Frame-Options "SAMEORIGIN"
-        X-Content-Type-Options "nosniff"
-        Referrer-Policy "strict-origin-when-cross-origin"
-        -Server
-    }
-
     log {
-        output file /var/log/caddy/heloisarossato.log
+        output file /var/log/caddy/seusite.log
         format json
     }
 }
@@ -42,7 +60,7 @@ heloisarossato.com, www.heloisarossato.com {
 # ──────────────────────────────────────────────────────────────────────────────
 # Template para subdomínios futuros
 #
-# projeto1.heloisarossato.com {
+# projeto1.seusite.com {
 #     reverse_proxy localhost:5001 {
 #         header_up X-Real-IP {remote_host}
 #     }
