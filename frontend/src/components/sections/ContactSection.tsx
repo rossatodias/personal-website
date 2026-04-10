@@ -56,7 +56,7 @@ export function ContactSection() {
                             {[
                                 { icon: Mail, label: 'Email', href: 'mailto:contato@heloisarossato.com', text: 'contato@heloisarossato.com' },
                                 { icon: Github, label: 'GitHub', href: 'https://github.com/rossatodias', text: 'github.com/rossatodias' },
-                                { icon: Linkedin, label: 'LinkedIn', href: 'https://linkedin.com/in/heloisa-rossato', text: 'linkedin.com/in/heloisarossato' },
+                                { icon: Linkedin, label: 'LinkedIn', href: 'https://linkedin.com/in/heloisa-rossato', text: 'linkedin.com/in/heloisa-rossato' },
                             ].map(({ icon: Icon, label, href, text }) => (
                                 <a
                                     key={label}
