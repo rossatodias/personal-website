@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { generalLimiter } from '../middleware/rateLimiter'
 import projectsRouter from './projects'
 import contactRouter from './contact'
+import honeypotRouter from './honeypot'
 
 export const apiRouter = Router()
 
@@ -15,3 +16,6 @@ apiRouter.get('/health', (_req, res) => {
 
 apiRouter.use('/projects', projectsRouter)
 apiRouter.use('/contact', contactRouter)
+
+// ── Honeypot routes (must be AFTER real routes to not shadow them) ────────────
+apiRouter.use(honeypotRouter)

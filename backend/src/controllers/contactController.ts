@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { sendContactEmail } from '../services/mailer'
+import { logger } from '../utils/logger'
 
 export async function sendContact(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -9,18 +10,24 @@ export async function sendContact(req: Request, res: Response, next: NextFunctio
             message: string
         }
 
-        const receivedAt = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+        logger.info('Contact form submission', {
+            requestId: req.id,
+            name,
+            email,
+            ip: req.ip,
+            // NEVER log the message body — PII / privacy
+        })
 
-        // ── Log (visível em: journalctl -u pw -f) ────────────────────────────
-        console.log('[contact]', JSON.stringify({ name, email, receivedAt }))
-
-        // ── Envio via mailer facade (Google em dev, SES em prod) ─────────────
         await sendContactEmail({ name, email, message })
-        console.log('[contact] Email enviado com sucesso')
+
+        logger.info('Contact email sent', { requestId: req.id })
 
         res.status(200).json({ message: 'Mensagem recebida com sucesso!' })
     } catch (err) {
-        console.error('[contact] Erro ao enviar email:', err)
+        logger.error('Failed to send contact email', {
+            requestId: req.id,
+            errorMessage: (err as Error).message,
+        })
         next(err)
     }
 }

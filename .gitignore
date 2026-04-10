@@ -35,3 +35,6 @@ frontend/dist/
 # ── EC2 runtime config (versionamos apenas os .example) ──
 Caddyfile
 pw.service
+
+# ── Lambda config ───────────────────────────────────────────────────────────
+lambda/

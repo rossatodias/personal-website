@@ -1,4 +1,5 @@
 import rateLimit from 'express-rate-limit'
+import { logger } from '../utils/logger'
 
 /**
  * General API rate limiter – 100 req / 15 min per IP
@@ -9,6 +10,14 @@ export const generalLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: 'Muitas requisições. Tente novamente mais tarde.' },
+    handler: (req, res, _next, options) => {
+        logger.security('Rate limit exceeded (general)', {
+            ip: req.ip,
+            path: req.path,
+            requestId: req.id,
+        })
+        res.status(options.statusCode).json(options.message)
+    },
 })
 
 /**
@@ -25,4 +34,11 @@ export const contactLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: 'Limite de mensagens atingido. Tente novamente mais tarde.' },
+    handler: (req, res, _next, options) => {
+        logger.security('Rate limit exceeded (contact)', {
+            ip: req.ip,
+            requestId: req.id,
+        })
+        res.status(options.statusCode).json(options.message)
+    },
 })
